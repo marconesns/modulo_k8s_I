@@ -1,0 +1,27 @@
+- name: Preserving the cluster environment
+  hosts: all
+  gather_facts: false
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  roles:
+    - { role: commons }
+    - { role: k8s }
+
+- name: Configuring the master node
+  hosts: masters
+  gather_facts: true
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  roles:
+    - { role: master }
+
+- name: Configuring the nodes works
+  hosts: nodes
+  gather_facts: true
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  roles:
+    - { role: nodes }

@@ -1,0 +1,17 @@
+all:
+  vars:
+    OS: "xUbuntu_22.04"
+    VERSION: "1.26"
+    WEAVE_VERSION: "v2.8.1"
+  children:
+    kubernetes:
+      children:
+        masters:
+          hosts:
+            10.0.0.1:
+        nodes:
+          hosts:
+            10.0.0.2:
+            10.0.0.3:
+        
+

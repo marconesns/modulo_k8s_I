@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-tolerations-pod
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+  tolerations:
+  - key: my-taint
+    operator: "Exists"
+    effect: "NoSchedule"

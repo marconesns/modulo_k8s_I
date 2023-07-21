@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Node
+metadata:
+  name: <CHANGE-ME>
+spec:
+  taints:
+  - key: my-taint
+    value: my-value
+    effect: NoSchedule

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-deployment
+  labels:
+    app: hello-world
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+        - image: nginx
+          name: hello-world
+          ports:
+            - containerPort: 80
+          volumeMounts:
+          - name: workdir
+            mountPath: /usr/share/nginx/html
+      initContainers:
+        - name: install
+          image: alpine/git:latest
+          command: ["/bin/sh", "-c"]
+          args: ["git clone https://github.com/marconesns/mysite.git /work-dir/" ]
+          volumeMounts:
+          - name: workdir
+            mountPath: "/work-dir"
+      dnsPolicy: Default
+      volumes:
+      - name: workdir
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-svc
+  labels:
+    app: hello-world
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  type: NodePort
+  selector:
+    app: hello-world

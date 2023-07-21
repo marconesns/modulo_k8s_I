@@ -1,0 +1,2 @@
+- name: Weave net install CNI
+  shell: kubectl apply -f https://github.com/weaveworks/weave/releases/download/{{ WEAVE_VERSION }}/weave-daemonset-k8s.yaml

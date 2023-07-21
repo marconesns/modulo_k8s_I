@@ -1,0 +1,28 @@
+- name: Add an Apt signing key to a specific keyring file
+  ansible.builtin.apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    keyring: /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+
+- name: Add specified repository kubernetes
+  ansible.builtin.apt_repository:
+    repo: deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes
+    update_cache: yes    
+
+- name: Install Packages kubernetes
+  ansible.builtin.apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+
+- name: Enable service kubelet
+  ansible.builtin.service:
+    name: kubelet
+    enabled: yes
+    state: started
+
+- name: Mak hold package
+  shell: apt-mark hold kubelet kubeadm kubectl    

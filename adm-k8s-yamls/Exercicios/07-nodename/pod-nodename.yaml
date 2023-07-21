@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: <CHANGE-ME>
+spec:
+  nodeName: <CHANGE-ME>
+  containers:
+    - name: meu-container
+      image: nginx

@@ -1,0 +1,100 @@
+# - name: Run apt-get update
+#   ansible.builtin.apt:
+#     update_cache: yes
+
+- name: Install packages required
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+    state: present
+
+- name: Add an Apt signing key crio
+  ansible.builtin.apt_key:
+    url: https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ VERSION }}/{{ OS }}/Release.key
+    state: present
+
+- name: Add an Apt signing key kubic-libcontainers
+  ansible.builtin.apt_key:
+    url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ OS }}/Release.key
+    state: present    
+
+- name: Add specified repository devel:kubic:libcontainers:stable
+  ansible.builtin.apt_repository:
+    repo: deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ OS }}/ /
+    state: present
+    filename: devel-kubic-libcontainers-stable
+
+- name: Add specified repository devel:kubic:libcontainers:stable:cri-o:{{ VERSION }}
+  ansible.builtin.apt_repository:
+    repo: deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ VERSION }}/{{ OS }}/ /
+    state: present
+    filename: devel:kubic:libcontainers:stable:cri-o:{{ VERSION }}
+
+# - name: Run apt-get update pos repository
+#   ansible.builtin.apt:
+#     update_cache: yes
+
+- name: Install packages cri-o and cri-o-runc
+  apt:
+    name: 
+      - cri-o
+      - cri-o-runc
+      - containernetworking-plugins
+    state: present
+    update_cache: yes
+
+- name: Enable service crio
+  ansible.builtin.service:
+    name: crio
+    enabled: yes
+    state: started
+
+- name: Install package cri-tools
+  apt:
+    name: 
+      - cri-tools
+    state: present    
+    
+- name: Bash-completion crictl
+  shell: crictl completion > /etc/bash_completion.d/crictl    
+
+- name: Add modules overlay
+  community.general.modprobe:
+    name: overlay
+    state: present
+
+- name: Add modules br_netfilter
+  community.general.modprobe:
+    name: br_netfilter
+    state: present
+
+- name: net.bridge.bridge-nf-call-iptables
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: net.ipv4.ip_forward
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: net.bridge.bridge-nf-call-ip6tables
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: Just force systemd to reread configs
+  ansible.builtin.systemd:
+    daemon_reload: yes

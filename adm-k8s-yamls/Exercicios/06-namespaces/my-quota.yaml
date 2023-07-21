@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: my-quota
+  namespace: quota-namespace
+spec:
+  hard:
+    cpu: "1"
+    memory: 512Mi
+    pods: "10"

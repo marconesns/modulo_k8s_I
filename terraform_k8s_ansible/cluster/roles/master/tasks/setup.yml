@@ -1,0 +1,23 @@
+- name: Initialize Cluster k8s
+  shell: kubeadm init --control-plane-endpoint="<ip publico>:6443" >> cluster_init.log 
+  args:
+    chdir: $HOME
+    creates: cluster_init.log
+
+- name: Create .kube directory
+  file:
+    path: $HOME/.kube
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+
+- name: Copy kubeconfig
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: $HOME/.kube/config
+    remote_src: yes
+    owner: root
+    group: root
+    mode: 0660
+    
